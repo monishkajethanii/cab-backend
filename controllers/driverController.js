@@ -1,5 +1,6 @@
 const express = require('express');
-const supabase = require('../config/db')
+const supabase = require('../config/db');
+const e = require('express');
 const register = async (req, res) => {
     try{
         const {id, firstname, lastname, phoneno, dob, vtype, vmodel, vyear, vplate, licenseno, license_expiry} = req.body;
@@ -42,4 +43,26 @@ const register = async (req, res) => {
         return res.status(500).json({ message: "Internal Server Error"});
     }
 }
-module.exports = {register}
+const getDrivers = async (req,res) =>{
+    try{
+        const {data, error} = await supabase
+        .from('driver')
+        .select('*');
+
+        if(error)
+        {
+            return res.status(500).json({message:"Internal server error"});
+        }
+        if(!data || data.length == 0)
+        {
+            return res.status(404).json({message:"no driver registered!"})
+        }
+        return res.status(200).json({data});
+    }
+    catch(err)
+    {
+        console.error(err)
+        return res.status(500).json({message:"Internal server error"});
+    }
+}
+module.exports = {register, getDrivers}
